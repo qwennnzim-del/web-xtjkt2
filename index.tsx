@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { createRoot } from 'react-dom/client';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js';
-import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js';
+import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import LoginView from './LoginView';
@@ -42,9 +42,31 @@ const App = () => {
   const [userProfile, setUserProfile] = useState({ 
     name: localStorage.getItem('xtjkt2_user_name') || '', 
     classMajor: 'X TJKT 2', 
-    bio: 'Siswa X TJKT 2.', 
+    bio: 'Siswa X TJKT 2 yang rajin.', 
     image: null 
   });
+
+  // POWERFUL FIX: Fungsi ini akan memaksa nama di UI berubah & mengupdate database jika Admin login
+  const forceFixData = (rawMembers: any[]) => {
+    let changed = false;
+    const fixed = rawMembers.map(m => {
+      let name = m.name.toUpperCase().trim();
+      if (name === "ZENT" || name === "ZENT ") {
+        changed = true;
+        return { ...m, name: "M FARIZ ALFAUZI" };
+      }
+      if (name === "NOIR" || name === "NOIR ") {
+        changed = true;
+        return { ...m, name: "MUHAMMAD RAJIB" };
+      }
+      if (name === "ZYLD" || name === "ZYLD ") {
+        changed = true;
+        return { ...m, name: "MUHAMMAD ZYLDAN" };
+      }
+      return m;
+    });
+    return { fixed, changed };
+  };
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -55,7 +77,14 @@ const App = () => {
     const unsubGlobal = onSnapshot(doc(db, "classData", "global"), (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
-        if (data.members) setMembers(data.members);
+        if (data.members) {
+          const { fixed, changed } = forceFixData(data.members);
+          setMembers(fixed);
+          // Jika ada perubahan nama dan user adalah Admin, paksa update ke Firebase
+          if (changed && isAdmin) {
+            setDoc(doc(db, "classData", "global"), { members: fixed }, { merge: true });
+          }
+        }
         if (data.schedule) setSchedule(data.schedule);
         if (data.announcement !== undefined) setAnnouncement(data.announcement);
         if (data.systemStatus !== undefined) setSystemStatus(data.systemStatus);
@@ -79,35 +108,47 @@ const App = () => {
   }, [isAuthenticated, isAdmin]);
 
   useEffect(() => {
-    const root = document.documentElement;
-    if (systemStatus === 'Emergency') {
-      root.style.setProperty('--accent', '#ef4444');
-      root.style.setProperty('--accent-glow', 'rgba(239, 68, 68, 0.2)');
-    } else if (systemStatus === 'Maintenance') {
-      root.style.setProperty('--accent', '#f59e0b');
-      root.style.setProperty('--accent-glow', 'rgba(245, 158, 11, 0.2)');
-    } else {
-      root.style.setProperty('--accent', '#3b82f6');
-      root.style.setProperty('--accent-glow', 'rgba(59, 130, 246, 0.2)');
-    }
-  }, [systemStatus]);
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const initDefaultData = async () => {
     const defaultData = {
-      announcement: 'Selamat Datang di Hub Jaringan X TJKT 2. Pastikan koneksi aman.',
+      announcement: 'Halo semuanya! Selamat belajar dan tetap semangat ya untuk hari ini.',
       systemStatus: 'Optimal',
-      currentTrack: { title: 'Lofi Cyberpunk', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
+      currentTrack: { title: 'Lagu Santai', url: 'https://files.catbox.moe/kxlm7m.mp3' },
       members: [
         { name: 'IBU RESITA', role: 'Wali Kelas', priority: true, badges: ['MENTOR'], image: null },
         { name: 'IRFAN FERMADI', role: 'Ketua Murid', priority: true, badges: ['COMMANDER'], image: null },
         { name: 'GALUH RAY PUTRA', role: 'Wakil Murid', priority: true, badges: ['V-CMD'], image: null },
-        { name: 'Fariz', role: 'DEVELOPMENT', priority: true, badges: ['CORE-DEV'], image: null },
-        { name: 'Rajib', role: 'Struktur Web', priority: true, badges: ['ARCHITECT'], image: null },
-        { name: 'Zyldan', role: 'Desain Web', priority: true, badges: ['VISUAL'], image: null },
+        { name: 'M FARIZ ALFAUZI', role: 'DEVELOPMENT', priority: true, badges: ['CORE-DEV'], image: null },
+        { name: 'MUHAMMAD RAJIB', role: 'Struktur Web', priority: true, badges: ['ARCHITECT'], image: null },
+        { name: 'MUHAMMAD ZYLDAN', role: 'Desain Web', priority: true, badges: ['VISUAL'], image: null },
+        { name: 'MELVINA YEIZA ALWI', role: 'Siswa', priority: false, badges: [], image: null },
       ],
-      schedule: {}
+      schedule: {
+        'Senin': {
+          uniform: 'Baju Putih Abu (Pakai atribut LENGKAP ya)',
+          piket: [
+            'Alham Haikal', 'Aurel Agri', 'Bibit Adi', 'M Razib', 'M Rizki', 
+            'Naffa Mayna', 'Nurshifa Amalia', 'Rayhan Ambiya', 'Salma Yuniar', 'Muhani Khalifia'
+          ],
+          umum: [
+            { subject: 'UPACARA BENDERA', time: '07.30–08.05' },
+            { subject: 'MATA PELAJARAN IPAS', time: '12.25–14.45' },
+            { subject: 'ISTIRAHAT', time: '09.50–10.10' },
+            { subject: 'ISTIRAHAT', time: '11.55–12.25' }
+          ]
+        },
+        'Selasa': { uniform: '-', piket: [], umum: [] },
+        'Rabu': { uniform: '-', piket: [], umum: [] },
+        'Kamis': { uniform: '-', piket: [], umum: [] },
+        'Jumat': { uniform: '-', piket: [], umum: [] }
+      }
     };
     await setDoc(doc(db, "classData", "global"), defaultData);
+    await setDoc(doc(db, "classData", "matrix"), { groups: [] }, { merge: true });
   };
 
   const syncToCloud = async (docName: string, data: any) => {
@@ -142,7 +183,7 @@ const App = () => {
       <div className="min-h-screen bg-[#050505] flex items-center justify-center font-tech text-accent">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-current border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
-          <p className="text-white tracking-[0.3em] uppercase text-xs">Accessing Neural Cloud...</p>
+          <p className="text-white tracking-[0.3em] uppercase text-xs font-bold">Lagi Sinkronisasi Cloud...</p>
         </div>
       </div>
     );

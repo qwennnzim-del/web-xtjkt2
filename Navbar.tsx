@@ -39,11 +39,11 @@ const Navbar = ({ view, setView, isAdmin, scrolled, onLogout, systemStatus, curr
   };
 
   const navItems = [
-    { id: 'main', label: 'Beranda' },
-    { id: 'schedule', label: 'Jadwal' },
-    { id: 'groups', label: 'Matrix' },
-    { id: 'gallery', label: 'Galeri' },
-    { id: 'profile', label: 'Profil', icon: isAdmin ? <BadgeCheckIcon size={14} className="text-accent" /> : null },
+    { id: 'main', label: 'Rumah' },
+    { id: 'schedule', label: 'Cek Jadwal' },
+    { id: 'groups', label: 'Kelompok' },
+    { id: 'gallery', label: 'Foto Momen' },
+    { id: 'profile', label: 'Profil Saya', icon: isAdmin ? <BadgeCheckIcon size={14} className="text-accent" /> : null },
   ];
 
   return (
@@ -63,25 +63,24 @@ const Navbar = ({ view, setView, isAdmin, scrolled, onLogout, systemStatus, curr
               </div>
               <div className="flex flex-col leading-none animate-in fade-in slide-in-from-left-5 duration-1000 delay-300 ease-out">
                 <span className="text-base md:text-xl font-tech font-bold tracking-[0.2em] text-white group-hover:text-accent transition-colors">TJKT</span>
-                <span className="text-[8px] md:text-[10px] font-tech text-accent font-bold tracking-[0.4em] mt-1 opacity-80 group-hover:opacity-100 transition-all duration-1000">SERIES 02</span>
+                <span className="text-[8px] md:text-[10px] font-tech text-accent font-bold tracking-[0.4em] mt-1 opacity-80 group-hover:opacity-100 transition-all duration-1000">ANGKATAN 2</span>
               </div>
             </div>
             
             <div className="hidden lg:flex items-center gap-3 pl-6 border-l border-white/10">
               <Activity size={12} className={systemStatus === 'Optimal' ? 'text-green-500 animate-pulse' : systemStatus === 'Maintenance' ? 'text-amber-500' : 'text-red-500'} />
-              <span className="text-[8px] font-tech text-slate-500 uppercase tracking-[0.2em]">Status: <span className="text-white">{systemStatus}</span></span>
+              <span className="text-[8px] font-tech text-slate-500 uppercase tracking-[0.2em]">Kondisi: <span className="text-white">{systemStatus === 'Optimal' ? 'Aman' : systemStatus}</span></span>
             </div>
           </div>
 
-          {/* Vibe Player - Mobile & Desktop */}
           <div className="hidden lg:flex glass px-4 py-2 rounded-full items-center gap-4 border-white/5 mx-4 max-w-[200px] overflow-hidden">
             <button onClick={toggleAudio} className={`p-2 rounded-full transition-all ${isPlaying ? 'bg-accent text-white animate-pulse' : 'bg-white/5 text-slate-500 hover:text-white'}`}>
               {isPlaying ? <Volume2 size={12}/> : <VolumeX size={12}/>}
             </button>
             <div className="flex flex-col overflow-hidden whitespace-nowrap">
-              <span className="text-[7px] font-tech text-slate-500 uppercase tracking-widest">Acoustic Net</span>
+              <span className="text-[7px] font-tech text-slate-500 uppercase tracking-widest">Lagi Putar</span>
               <div className={`text-[9px] font-tech text-white uppercase tracking-tighter ${isPlaying ? 'animate-marquee' : ''}`}>
-                {currentTrack.title || 'Waiting for signal...'}
+                {currentTrack.title || 'Mencari sinyal lagu...'}
               </div>
             </div>
             <audio ref={audioRef} loop />
@@ -114,7 +113,7 @@ const Navbar = ({ view, setView, isAdmin, scrolled, onLogout, systemStatus, curr
                <div className="flex flex-col">
                  <span className="text-2xl font-tech font-bold">TJKT 2</span>
                  <button onClick={toggleAudio} className="flex items-center gap-2 text-[10px] text-accent mt-1 uppercase tracking-widest font-bold">
-                   <Music size={12}/> {isPlaying ? 'Vibe: Active' : 'Vibe: Muted'}
+                   <Music size={12}/> {isPlaying ? 'Musik: On' : 'Musik: Mati'}
                  </button>
                </div>
             </div>
@@ -124,7 +123,7 @@ const Navbar = ({ view, setView, isAdmin, scrolled, onLogout, systemStatus, curr
               ))}
             </div>
           </div>
-          <button onClick={onLogout} className="w-full py-5 border border-red-500/30 text-red-500 font-tech text-[10px] rounded-2xl flex items-center justify-center gap-3 uppercase font-bold">TERMINATE SESSION <LogOutIcon size={16}/></button>
+          <button onClick={onLogout} className="w-full py-5 border border-red-500/30 text-red-500 font-tech text-[10px] rounded-2xl flex items-center justify-center gap-3 uppercase font-bold">KELUAR DULU YA <LogOutIcon size={16}/></button>
         </div>
       </div>
     </>

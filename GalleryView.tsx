@@ -10,15 +10,14 @@ interface GalleryViewProps {
 
 const GalleryView = ({ isAdmin, galleryImages, setGalleryImages }: GalleryViewProps) => {
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Only admins can trigger this
     if (!isAdmin) return;
     
     const file = e.target.files?.[0];
     if (file) {
-      const caption = prompt("Caption momen:");
+      const caption = prompt("Tulis cerita singkat foto ini:");
       const reader = new FileReader();
       reader.onloadend = () => {
-        const newImg = { id: Date.now().toString(), url: reader.result as string, caption: caption || "Momen Kelas", date: new Date().toLocaleDateString('id-ID') };
+        const newImg = { id: Date.now().toString(), url: reader.result as string, caption: caption || "Foto Seru Hari Ini", date: new Date().toLocaleDateString('id-ID') };
         setGalleryImages([newImg, ...galleryImages]);
       };
       reader.readAsDataURL(file);
@@ -27,18 +26,18 @@ const GalleryView = ({ isAdmin, galleryImages, setGalleryImages }: GalleryViewPr
 
   const deleteImg = (id: string) => {
     if (!isAdmin) return;
-    if (confirm("Hapus?")) setGalleryImages(galleryImages.filter(img => img.id !== id));
+    if (confirm("Kamu yakin mau hapus kenangan ini?")) setGalleryImages(galleryImages.filter(img => img.id !== id));
   };
 
   return (
     <div className="min-h-screen pt-32 pb-20 px-6">
       <div className="container mx-auto max-w-6xl">
         <div className="flex justify-between items-end mb-16">
-          <h2 className="text-6xl font-serif italic text-white">Galeri Momen</h2>
+          <h2 className="text-6xl font-serif italic text-white">Foto Kenangan</h2>
           {isAdmin && (
             <div className="relative overflow-hidden group">
               <button className="px-8 py-4 bg-blue-600 rounded-2xl text-white font-tech text-[10px] flex items-center gap-2 tracking-widest uppercase">
-                <Upload size={16}/> Unggah
+                <Upload size={16}/> UPLOAD FOTO
               </button>
               <input type="file" accept="image/*" className="absolute inset-0 opacity-0 cursor-pointer" onChange={handleUpload}/>
             </div>
@@ -59,7 +58,7 @@ const GalleryView = ({ isAdmin, galleryImages, setGalleryImages }: GalleryViewPr
             ))}
           </div>
         ) : (
-          <div className="glass p-32 rounded-[40px] text-center text-slate-500 font-tech uppercase text-xs tracking-widest"><ImageIcon size={48} className="mx-auto mb-4 opacity-20"/> Galeri Kosong</div>
+          <div className="glass p-32 rounded-[40px] text-center text-slate-500 font-tech uppercase text-xs tracking-widest"><ImageIcon size={48} className="mx-auto mb-4 opacity-20"/> Belum ada foto nih</div>
         )}
       </div>
     </div>
