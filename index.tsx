@@ -12,9 +12,6 @@ import ScheduleView from './ScheduleView';
 import GroupsView from './GroupsView';
 import GalleryView from './GalleryView';
 
-// ========================================================
-// FIREBASE CONFIG MILIK XTJKT2-WEB
-// ========================================================
 const firebaseConfig = {
   apiKey: "AIzaSyC2cgAFblJgpg8-p5IvMwrcenE7v-hPPeo",
   authDomain: "xtjkt2-web.firebaseapp.com",
@@ -25,7 +22,6 @@ const firebaseConfig = {
   measurementId: "G-4GV4KT06CE"
 };
 
-// Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
@@ -40,6 +36,9 @@ const App = () => {
   const [members, setMembers] = useState([]);
   const [schedule, setSchedule] = useState({});
   const [galleryImages, setGalleryImages] = useState([]);
+  const [announcement, setAnnouncement] = useState('');
+  const [systemStatus, setSystemStatus] = useState('Optimal');
+  const [currentTrack, setCurrentTrack] = useState({ title: 'No Signal', url: '' });
   const [userProfile, setUserProfile] = useState({ 
     name: localStorage.getItem('xtjkt2_user_name') || '', 
     classMajor: 'X TJKT 2', 
@@ -53,19 +52,19 @@ const App = () => {
       return;
     }
 
-    // 1. Sinkronisasi Anggota & Jadwal
     const unsubGlobal = onSnapshot(doc(db, "classData", "global"), (docSnap) => {
       if (docSnap.exists()) {
         const data = docSnap.data();
         if (data.members) setMembers(data.members);
         if (data.schedule) setSchedule(data.schedule);
+        if (data.announcement !== undefined) setAnnouncement(data.announcement);
+        if (data.systemStatus !== undefined) setSystemStatus(data.systemStatus);
+        if (data.currentTrack !== undefined) setCurrentTrack(data.currentTrack);
       } else if (isAdmin) {
-        // Hanya Admin yang bisa menginisialisasi data pertama kali
         initDefaultData();
       }
     });
 
-    // 2. Sinkronisasi Galeri
     const unsubGallery = onSnapshot(doc(db, "classData", "gallery"), (docSnap) => {
       if (docSnap.exists()) {
         setGalleryImages(docSnap.data().images || []);
@@ -79,63 +78,34 @@ const App = () => {
     };
   }, [isAuthenticated, isAdmin]);
 
+  useEffect(() => {
+    const root = document.documentElement;
+    if (systemStatus === 'Emergency') {
+      root.style.setProperty('--accent', '#ef4444');
+      root.style.setProperty('--accent-glow', 'rgba(239, 68, 68, 0.2)');
+    } else if (systemStatus === 'Maintenance') {
+      root.style.setProperty('--accent', '#f59e0b');
+      root.style.setProperty('--accent-glow', 'rgba(245, 158, 11, 0.2)');
+    } else {
+      root.style.setProperty('--accent', '#3b82f6');
+      root.style.setProperty('--accent-glow', 'rgba(59, 130, 246, 0.2)');
+    }
+  }, [systemStatus]);
+
   const initDefaultData = async () => {
     const defaultData = {
+      announcement: 'Selamat Datang di Hub Jaringan X TJKT 2. Pastikan koneksi aman.',
+      systemStatus: 'Optimal',
+      currentTrack: { title: 'Lofi Cyberpunk', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
       members: [
-        { name: 'IBU RESITA', role: 'Wali Kelas', priority: true, image: null },
-        { name: 'IRFAN FERMADI', role: 'Ketua Murid', priority: true, image: null },
-        { name: 'GALUH RAY PUTRA', role: 'Wakil Murid', priority: true, image: null },
-        { name: 'MELVINA YEIZA ALWI', role: 'Sekretaris', priority: true, image: null },
-        { name: 'Muhani Khalifia Khadijah', role: 'Sekretaris', priority: true, image: null },
-        { name: 'SALMA YUNIAR', role: 'Bendahara', priority: true, image: null },
-        { name: 'SITI SARIFAH ANJANI', role: 'Bendahara', priority: true, image: null },
-        { name: 'Zent', role: 'DEVELOPMENT', priority: true, image: null },
-        { name: 'Noir', role: 'Struktur Web', priority: true, image: null },
-        { name: 'Zyld', role: 'Desain Web', priority: true, image: null },
-        { name: 'ALHAM HAIKAL', role: 'Siswa', image: null },
-        { name: 'ANNAS NASRI MAULUDIN', role: 'Siswa', image: null },
-        { name: 'AUREL AGRI NOVIANTI', role: 'Siswa', image: null },
-        { name: 'AYATULL HUSNA', role: 'Siswa', image: null },
-        { name: 'AZMI ABDUL MAULANA', role: 'Siswa', image: null },
-        { name: 'Bibit Adi Syaputra', role: 'Siswa', image: null },
-        { name: 'CAKRA BUANA', role: 'Siswa', image: null },
-        { name: 'DERI PADLLI', role: 'Siswa', image: null },
-        { name: 'DIMAS ALVINO', role: 'Siswa', image: null },
-        { name: 'EVANDER YUSUP FARIZKY', role: 'Siswa', image: null },
-        { name: 'GALUH RAGA PANUNTUN', role: 'Siswa', image: null },
-        { name: 'HASBI NURSYAH PUTRA', role: 'Siswa', image: null },
-        { name: 'INTAN DARMAWAN', role: 'Siswa', image: null },
-        { name: 'M RABLI AZWAR', role: 'Siswa', image: null },
-        { name: 'M. PADIL NURJAMAN', role: 'Siswa', image: null },
-        { name: 'Megha Indah Ramdani', role: 'Siswa', image: null },
-        { name: 'MOH BILAL NURULFATA', role: 'Siswa', image: null },
-        { name: 'MUHAMAD FIRMAN SUPIANI', role: 'Siswa', image: null },
-        { name: 'MUHAMAD MAULANA', role: 'Siswa', image: null },
-        { name: 'MUHAMAD WIJAYA ZAINUR RAHMAN', role: 'Siswa', image: null },
-        { name: 'Muhamad Zaky Pairus', role: 'Siswa', image: null },
-        { name: 'MUHAMMAD RASYA RADITYA SWARNA', role: 'Siswa', image: null },
-        { name: 'MUHAMMAD REIHAN ALPIANSYAH', role: 'Siswa', image: null },
-        { name: 'MUHAMMAD RIZKI PRATAMA', role: 'Siswa', image: null },
-        { name: 'NURSHIFA AMALIA', role: 'Siswa', image: null },
-        { name: 'PAHRI GILANG PRATAMA', role: 'Siswa', image: null },
-        { name: 'RAYHAN AMBIYA', role: 'Siswa', image: null },
-        { name: 'REZA JUNIARDI', role: 'Siswa', image: null },
-        { name: 'RINDU RIAYU', role: 'Siswa', image: null },
-        { name: 'RISTA AMELIA', role: 'Siswa', image: null },
-        { name: 'RIZKIA FEBRIANTI', role: 'Siswa', image: null },
-        { name: 'SALMA ZULFA NASYITHA', role: 'Siswa', image: null },
-        { name: 'SHIRA PUTRYASNI WULANDARI', role: 'Siswa', image: null },
-        { name: 'WOLID HERDIANSYAH', role: 'Siswa', image: null },
-        { name: 'ZULPA APRILIANI', role: 'Siswa', image: null },
-        { name: 'RAYA', role: 'Siswa', image: null },
+        { name: 'IBU RESITA', role: 'Wali Kelas', priority: true, badges: ['MENTOR'], image: null },
+        { name: 'IRFAN FERMADI', role: 'Ketua Murid', priority: true, badges: ['COMMANDER'], image: null },
+        { name: 'GALUH RAY PUTRA', role: 'Wakil Murid', priority: true, badges: ['V-CMD'], image: null },
+        { name: 'Fariz', role: 'DEVELOPMENT', priority: true, badges: ['CORE-DEV'], image: null },
+        { name: 'Rajib', role: 'Struktur Web', priority: true, badges: ['ARCHITECT'], image: null },
+        { name: 'Zyldan', role: 'Desain Web', priority: true, badges: ['VISUAL'], image: null },
       ],
-      schedule: {
-        'Senin': { umum: ['Upacara', 'Agama', 'Pancasila'], produktif: ['Dasar TJKT', 'Informatika'] },
-        'Selasa': { umum: ['B. Indonesia', 'Matematika', 'Sejarah'], produktif: ['Dasar TJKT'] },
-        'Rabu': { umum: ['B. Inggris', 'Seni Budaya'], produktif: ['Projek IPAS', 'Informatika'] },
-        'Kamis': { umum: ['PJOK', 'BK'], produktif: ['Dasar TJKT', 'Kewirausahaan'] },
-        'Jumat': { umum: ['B. Sunda', 'Literasi'], produktif: ['Lab Jaringan', 'Maintenance'] }
-      }
+      schedule: {}
     };
     await setDoc(doc(db, "classData", "global"), defaultData);
   };
@@ -148,12 +118,6 @@ const App = () => {
       console.error("Cloud Sync Error:", err);
     }
   };
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   const handleLogout = () => {
     setIsAuthenticated(false);
@@ -175,9 +139,9 @@ const App = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center font-tech">
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center font-tech text-accent">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <div className="w-16 h-16 border-4 border-current border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
           <p className="text-white tracking-[0.3em] uppercase text-xs">Accessing Neural Cloud...</p>
         </div>
       </div>
@@ -185,8 +149,16 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen">
-      <Navbar view={view} setView={setView} isAdmin={isAdmin} scrolled={scrolled} onLogout={handleLogout} />
+    <div className={`min-h-screen transition-colors duration-1000 ${systemStatus === 'Emergency' ? 'emergency-bg' : ''}`}>
+      <Navbar 
+        view={view} 
+        setView={setView} 
+        isAdmin={isAdmin} 
+        scrolled={scrolled} 
+        onLogout={handleLogout} 
+        systemStatus={systemStatus} 
+        currentTrack={currentTrack}
+      />
       
       <main className="animate-in fade-in duration-700">
         {view === 'main' && (
@@ -194,6 +166,12 @@ const App = () => {
             isAdmin={isAdmin} 
             members={members} 
             setMembers={(m) => { setMembers(m); syncToCloud("global", { members: m }); }} 
+            announcement={announcement}
+            setAnnouncement={(a) => { setAnnouncement(a); syncToCloud("global", { announcement: a }); }}
+            systemStatus={systemStatus}
+            setSystemStatus={(s) => { setSystemStatus(s); syncToCloud("global", { systemStatus: s }); }}
+            currentTrack={currentTrack}
+            setTrack={(t) => { setCurrentTrack(t); syncToCloud("global", { currentTrack: t }); }}
             userProfile={userProfile} 
           />
         )}

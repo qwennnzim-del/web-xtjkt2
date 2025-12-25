@@ -35,16 +35,16 @@ const GroupsView = ({ isAdmin, members, db }: GroupsViewProps) => {
     setTimeout(async () => {
       const pool = members.filter(m => m.role !== 'Wali Kelas');
       
-      const melvina = pool.find(m => m.name.includes("MELVINA"));
-      const zent = pool.find(m => m.name === "Zent");
+      const melvina = pool.find(m => m.name.includes("MELVINA") || m.name === "MELVINA YEIZA ALWI");
+      const fariz = pool.find(m => m.name === "Fariz");
       
       let finalPool = [];
-      if (melvina && zent && capacity >= 2) {
-        const others = pool.filter(m => m.name !== melvina.name && m.name !== zent.name);
+      if (melvina && fariz && capacity >= 2) {
+        const others = pool.filter(m => m.name !== melvina.name && m.name !== fariz.name);
         const shuffledOthers = [...others].sort(() => Math.random() - 0.5);
         const numGroups = Math.ceil(pool.length / capacity);
         const randIdx = Math.floor(Math.random() * numGroups);
-        shuffledOthers.splice(randIdx * capacity, 0, melvina, zent);
+        shuffledOthers.splice(randIdx * capacity, 0, melvina, fariz);
         finalPool = shuffledOthers;
       } else {
         finalPool = [...pool].sort(() => Math.random() - 0.5);

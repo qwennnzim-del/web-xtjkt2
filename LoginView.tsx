@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { User as UserIcon, Monitor, Lock, ArrowRight } from 'lucide-react';
 
@@ -13,7 +14,7 @@ const LoginView = ({ onLogin }: LoginViewProps) => {
     e.preventDefault();
     if (authMode === 'admin') {
       if (formData.secretCode === 'XTJKT0808AUTH') {
-        onLogin(true, { name: 'ADMIN ZENT', classMajor: 'X TJKT 2' });
+        onLogin(true, { name: 'ADMIN FARIZ', classMajor: 'X TJKT 2' });
         localStorage.setItem('xtjkt2_auth', 'true');
         localStorage.setItem('xtjkt2_is_admin', 'true');
       } else {
