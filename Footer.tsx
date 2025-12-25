@@ -8,7 +8,7 @@ const Footer = () => (
       <div className="flex flex-col md:flex-row justify-between items-center gap-12">
         <div>
           <div className="text-4xl font-serif italic text-white mb-4">Tetap Terhubung</div>
-          <p className="text-slate-500 font-tech uppercase text-xs">X TJKT 2 — ANGKATAN 2027</p>
+          <p className="text-slate-500 font-tech uppercase text-xs">X TJKT 2 — ANGKATAN 2025/2026</p>
         </div>
         <div className="flex gap-4">
           <a 

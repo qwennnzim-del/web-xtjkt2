@@ -78,7 +78,7 @@ const MainView = ({ isAdmin, members, setMembers, userProfile }: MainViewProps) 
               {[
                 { val: '46', label: 'Active Nodes' },
                 { val: '99%', label: 'Uptime Solid' },
-                { val: '2027', label: 'Release Year' },
+                { val: '2025', label: 'Release Year' },
                 { val: 'TJKT', label: 'Protocol' }
               ].map((stat, i) => (
                 <div key={i} className="glass p-5 md:p-6 rounded-[28px] border-white/5 group hover:bg-white/[0.02] transition-colors">
